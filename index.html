@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ganesh Utsav Festive Game Hub</title>
+    <style>
+        :root {
+            --maroon: #6b1d2f;
+            --saffron: #e67e22;
+            --cream: #fff9f2;
+            --gold: #f1c40f;
+        }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--cream); 
+            color: var(--maroon); 
+            text-align: center; 
+            margin: 0; 
+            padding: 10px; 
+        }
+        .container { 
+            max-width: 480px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 15px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
+            border: 3px solid var(--saffron); 
+        }
+        h1 { color: var(--maroon); font-size: 24px; margin-bottom: 5px; margin-top: 5px;}
+        h2 { color: var(--saffron); font-size: 20px; }
+        .btn { 
+            background-color: var(--saffron); 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            font-size: 16px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            width: 100%; 
+            margin: 8px 0; 
+            box-sizing: border-box;
+        }
+        .btn:hover { background-color: #d35400; }
+        .btn-secondary { background-color: var(--maroon); }
+        .btn-secondary:hover { background-color: #4a1320; }
+        input[type="text"] { 
+            width: 90%; 
+            padding: 12px; 
+            margin: 15px 0; 
+            border: 2px solid #cbd5e1; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            text-align: center; 
+        }
+        .hidden { display: none; }
+        .scramble-item { margin: 15px 0; text-align: left; background: #fff3e6; padding: 10px; border-radius: 8px; }
+        .scramble-item label { font-weight: bold; font-size: 16px; display: block; margin-bottom: 5px;}
+        .scramble-item input { width: 95%; padding: 8px; border: 1px solid var(--saffron); border-radius: 4px; font-size: 15px;}
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(15, 1fr); 
+            gap: 2px; 
+            margin: 15px 0; 
+            background: var(--maroon); 
+            padding: 3px; 
+            border-radius: 5px; 
+        }
+        .grid-cell { 
+            background: white; 
+            aspect-ratio: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            font-size: 11px; 
+            user-select: none; 
+            cursor: pointer; 
+            border-radius: 2px;
+        }
+        .grid-cell.selected { background-color: var(--gold); color: black; }
+        .word-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 15px 0; padding: 0; list-style: none;}
+        .word-item { padding: 4px 8px; background: #eee; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer;}
+        .word-item.found { background: #2ecc71; color: white; text-decoration: line-through; }
+        .quiz-item { text-align: left; background: #fff3e6; padding: 12px; border-radius: 8px; margin: 15px 0; }
+        .quiz-item p { font-weight: bold; margin-top: 0; font-size: 15px;}
+        .quiz-options label { display: block; margin: 8px 0; padding: 8px; background: white; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; font-size: 14px;}
+        .quiz-options input { margin-right: 10px; }
+        .score-display { font-size: 24px; font-weight: bold; margin: 20px 0; color: #2ecc71; }
+        .leaderboard-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .leaderboard-table th, .leaderboard-table td { border: 1px solid #cbd5e1; padding: 10px; text-align: center; }
+        .leaderboard-table th { background-color: var(--maroon); color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌺 Ganesh Utsav Game Hub 🌺</h1>
+        
+        <div id="setup-screen">
+            <p>Enter your name to unlock the party game pack</p>
+            <input type="text" id="player-name" placeholder="Your Name" required>
+            <button class="btn" onclick="startHub()">Enter Game Hub</button>
+        </div>
+
+        <div id="hub-screen" class="hidden">
+            <h2 id="welcome-msg">Welcome!</h2>
+            <p>Complete all 3 games to record your final score on the device leaderboard.</p>
+            <button class="btn" id="btn-scramble" onclick="showGame('scramble')">1. Ganesha Word Scramble</button>
+            <button class="btn" id="btn-search" onclick="showGame('search')">2. Extreme 15x15 Word Search</button>
+            <button class="btn" id="btn-quiz" onclick="showGame('quiz')">3. Grand Trivia Challenge</button>
+            <button class="btn btn-secondary" onclick="showLeaderboard()">View Score Leaderboard</button>
+        </div>
+
+        <div id="scramble-screen" class="hidden">
+            <h2>🧩 Name Word Scramble</h2>
+            <p>Unscramble the letters to find the correct name of Lord Ganesha!</p>
+            <div id="scramble-container"></div>
+            <button class="btn" onclick="submitScramble()">Submit Scramble Answers</button>
+            <button class="btn btn-secondary" onclick="backToHub()">Back to Hub</button>
+        </div>
+
+        <div id="search-screen" class="hidden">
+            <h2>🔍 Extreme 15x15 Word Search</h2>
+            <p>Tap letters on the grid to highlight them. Cross off names as you find them by tapping the list buttons below!</p>
+            <div class="grid-container" id="search-grid"></div>
+            <ul class="word-list" id="search-word-list"></ul>
+            <button class="btn" onclick="submitWordSearch()">Finish Word Search</button>
+            <button class="btn btn-secondary" onclick="backToHub()">Back to Hub</button>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <h2>🏆 Grand Trivia Challenge</h2>
+            <p>Answer the 15 scriptural and cultural questions accurately!</p>
+            <div id="quiz-container"></div>
+            <button class="btn" onclick="submitQuiz()">Submit Quiz Answers</button>
+            <button class="btn btn-secondary" onclick="backToHub()">Back to Hub</button>
+        </div>
+
+        <div id="leaderboard-screen" class="hidden">
+            <h2>📊 Party Scoreboard</h2>
+            <div id="final-score-box" class="hidden">
+                <p>Your Total Session Score:</p>
+                <div class="score-display" id="total-score-val">0 / 380</div>
+            </div>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr><th>Rank</th><th>Player Name</th><th>Total Score</th></tr>
+                </thead>
+                <tbody id="leaderboard-body"></tbody>
+            </table>
+            <button class="btn" onclick="backToHub()">Play Again / Return</button>
+        </div>
+    </div>
+
+    <!-- LINKING SCRIPTS CONTAINER -->
+    <script src="script.js"></script>
+</body>
+</html>
