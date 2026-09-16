@@ -221,3 +221,4 @@ function saveAndShowScores() {
     if (existingIndex > -1) {
         if (total > leaderboard[existingIndex].score) leaderboard[existingIndex].score = total;
     } else {
+
